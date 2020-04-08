@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<hibernate-mapping>
+    <class name="ru.job4j.hello.models.User" table="users">
+        <id name="id">
+            <generator class="identity"/>
+        </id>
+        <property name="expired" type="timestamp"/>
+        <property name="name"/>
+    </class>
+</hibernate-mapping>
