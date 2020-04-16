@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<!--suppress JSUnresolvedLibraryURL -->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>ToDo List</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css"
+          integrity="2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+    <script>
+        var host = 'localhost';
+        var port = '8080';
+
+        function showDone() {
+            var show = document.getElementById('showDone').checked;
+            if (!show) {
+                var rows = $('input[name="row"]');
+                for (var i = 0; i < rows.length; i++) {
+                    if (rows[i].checked) {
+                        $('#' + rows[i].id).parent().parent().attr('class','sr-only');
+                    }
+                }
+            } else {
+                $('tr[class="sr-only"]').removeAttr('class');
+            }
+        }
+
+        function doneItem(id) {
+            var val = document.getElementById(id).checked;
+            $.post(
+                'http://' + host + ':' + port + '/todolist/items',
+                {"id": id, "done": val}
+            ).fail(function(err){
+                console.log(err);
+                alert(err.statusText);
+            });
+            showDone();
+        }
+
+        function showItemAndReleaseButton(data) {
+            if (data.length > 2) {
+                var pars = JSON.parse(data);
+                $('thead').removeClass('sr-only');
+                pars.forEach(function (item) {
+                    $('thead').after(
+                        '<tr id="tr"><td>' + item.desc
+                        + '</td><td><input type="checkbox" name="row" id="' + item.id
+                        + '" onchange="doneItem(' + item.id + ')"></td></tr>'
+                    );
+                    if (item.done === true) {
+                        $(document.getElementById(item.id)).attr('checked', 'checked')
+                    }
+                });
+            }
+            $('#button').removeAttr('disable');
+        }
+
+        function sendItem(desc) {
+            $.post(
+                'http://' + host + ':' + port + '/todolist/add',
+                {"desc": desc}
+            ).done(function(data) {
+                showItemAndReleaseButton(data);
+            }).fail(function(err){
+                alert(err.statusText);
+            });
+        }
+
+        function addItem() {
+            var desc = $('#description');
+            var val = desc.val();
+            if (val !== "") {
+                $('#button').attr('disable', 'disable');
+                sendItem(val);
+                desc.val("");
+            }
+        }
+
+        $.ajax({
+            url: 'http://' + host + ':' + port + '/todolist/items',
+            type: 'GET',
+            dataType: 'text'
+        }).done(function (data) {
+            showItemAndReleaseButton(data);
+        }).fail(function (err) {
+            alert(err.statusText);
+        });
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <h2>ToDo List</h2>
+        </div>
+    </div>
+    <div class="row">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label for="description" class="col-sm-2 control-label">Description New Task</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" id="description" rows="3" name="task" placeholder="Description"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="button" id="button" class="btn btn-default" onclick="addItem()">Add Task</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" id="showDone" checked="checked" onchange="showDone()">
+                    Show done tasks
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-hover" id="table">
+                <thead class="sr-only">
+                <tr>
+                    <th>Task</th>
+                    <th>Done</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
