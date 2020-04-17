@@ -185,7 +185,7 @@
                 <db.todolisturl>jdbc:postgresql://localhost/todolist</db.todolisturl>
                 <db.username>postgres</db.username>
                 <!--suppress CheckTagEmptyBody -->
-                <db.password></db.password>
+                <db.password>password</db.password>
                 <db.driver>org.postgresql.Driver</db.driver>
                 <powermock.version>2.0.5</powermock.version>
             </properties>

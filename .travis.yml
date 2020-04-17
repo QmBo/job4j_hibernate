@@ -11,11 +11,15 @@ notifications:
     on_success: never # default: change
     on_failure: always # default: always
 
+addons:
+  postgresql: "10"
+
 services:
-- postgresql
+  - postgresql
 
 before_install:
-- psql -c 'create database todolist;' -U postgres
+  - psql -c 'create database todolist;' -U postgres
+  - sudo -u postgres psql -c "ALTER ROLE postgres WITH password 'password'"
 
 jdk:
   - oraclejdk14
