@@ -13,7 +13,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class MemoryStore implements Store<Item> {
     private final static MemoryStore STORE = new MemoryStore();
     private final List<Item> list = new CopyOnWriteArrayList<>();
-    private Integer lastId = 0;
 
     /**
      * Private constructor.
@@ -36,8 +35,14 @@ public class MemoryStore implements Store<Item> {
      */
     @Override
     public Item add(Item element) {
-        this.list.add(element);
-        return element.setId(++this.lastId);
+        int lastId = 0;
+        synchronized (this.list) {
+            if (!this.list.isEmpty()) {
+                lastId = this.list.get(this.list.size() - 1).getId();
+            }
+            this.list.add(element);
+        }
+        return element.setId(++lastId);
     }
 
     /**
