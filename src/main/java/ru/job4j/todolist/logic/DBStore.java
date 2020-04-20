@@ -2,10 +2,13 @@ package ru.job4j.todolist.logic;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import ru.job4j.todolist.models.Item;
 
 import java.util.*;
+import java.util.function.Function;
+
 /**
  * DBStore
  * @author Victor Egorov (qrioflat@gmail.com).
@@ -37,12 +40,10 @@ public class DBStore implements Store<Item> {
      */
     @Override
     public Item add(final Item item) {
-        try (Session session = FACTORY.openSession()) {
-            session.beginTransaction();
+        return this.tx(session -> {
             session.saveOrUpdate(item);
-            session.getTransaction().commit();
-        }
-        return item;
+            return item;
+        });
     }
 
     /**
@@ -62,13 +63,11 @@ public class DBStore implements Store<Item> {
      */
     @Override
     public Item delete(final Item item) {
-        Item result = this.findById(item);
-        try (Session session = FACTORY.openSession()) {
-            session.beginTransaction();
+        return this.tx(session -> {
+            Item result = this.findById(item);
             session.delete(item);
-            session.getTransaction().commit();
-        }
-        return result;
+            return result;
+        });
     }
 
     /**
@@ -77,18 +76,16 @@ public class DBStore implements Store<Item> {
      */
     @Override
     public List<Item> findAll() {
-        List<Item> result = new LinkedList<>();
-        try (Session session = FACTORY.openSession()) {
-            session.beginTransaction();
+        return this.tx(session -> {
+            List<Item> result = new LinkedList<>();
             List list = session.createQuery("from Item order by create asc").list();
-            session.getTransaction().commit();
             for (Object o : list) {
                 if (o != null) {
                     result.add((Item) o);
                 }
             }
-        }
-        return result.size() == 0 ? null : result;
+            return result.size() == 0 ? null : result;
+        });
     }
 
     /**
@@ -98,12 +95,27 @@ public class DBStore implements Store<Item> {
      */
     @Override
     public Item findById(final Item item) {
-        Item result;
-        try (Session session = FACTORY.openSession()) {
-            session.beginTransaction();
-            result = session.find(Item.class, item.getId());
-            session.getTransaction().commit();
+        return this.tx(session -> session.find(Item.class, item.getId()));
+    }
+
+    /**
+     * Transaction.
+     * @param command command
+     * @param <T> result
+     * @return transaction of command
+     */
+    private <T> T tx(final Function<Session, T> command) {
+        final Session session = FACTORY.openSession();
+        final Transaction tx = session.beginTransaction();
+        try {
+            T rsl = command.apply(session);
+            tx.commit();
+            return rsl;
+        } catch (final Exception e) {
+            session.getTransaction().rollback();
+            throw e;
+        } finally {
+            session.close();
         }
-        return result;
     }
 }
