@@ -11,7 +11,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>ListServlet</servlet-name>
-        <url-pattern>/items</url-pattern>
+        <url-pattern>/todo/items</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -21,6 +21,6 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>AddTaskServlet</servlet-name>
-        <url-pattern>/add</url-pattern>
+        <url-pattern>/todo/add</url-pattern>
     </servlet-mapping>
 </web-app>
