@@ -86,7 +86,7 @@
     </dependencies>
 
     <build>
-        <finalName>todolist</finalName>
+        <finalName>hibernate</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

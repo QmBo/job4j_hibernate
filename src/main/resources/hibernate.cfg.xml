@@ -6,8 +6,12 @@
         <property name="connection.username">postgres</property>
         <property name="connection.password">password</property>
         <property name="dialect">org.hibernate.dialect.PostgreSQL10Dialect</property>
+        <property name="show_sql">true</property>
 
         <mapping resource="ru/job4j/hello/models/User.hbm.xml"/>
         <mapping resource="ru/job4j/todolist/models/Item.hbm.xml"/>
+        <mapping resource="ru/job4j/carsplase/models/Engine.hbm.xml"/>
+        <mapping class="ru.job4j.carsplase.models.Car"/>
+        <mapping class="ru.job4j.carsplase.models.Driver"/>
     </session-factory>
 </hibernate-configuration>

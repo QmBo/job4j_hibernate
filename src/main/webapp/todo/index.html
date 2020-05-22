@@ -40,7 +40,7 @@
         function doneItem(id) {
             var val = document.getElementById(id).checked;
             $.post(
-                'http://' + host + ':' + port + '/todolist/items',
+                'http://' + host + ':' + port + '/hibernate/todo/items',
                 {"id": id, "done": val}
             ).fail(function(err){
                 console.log(err);
@@ -69,7 +69,7 @@
 
         function sendItem(desc) {
             $.post(
-                'http://' + host + ':' + port + '/todolist/add',
+                'http://' + host + ':' + port + '/hibernate/todo/add',
                 {"desc": desc}
             ).done(function(data) {
                 showItemAndReleaseButton(data);
@@ -89,7 +89,7 @@
         }
 
         $.ajax({
-            url: 'http://' + host + ':' + port + '/todolist/items',
+            url: 'http://' + host + ':' + port + '/hibernate/todo/items',
             type: 'GET',
             dataType: 'text'
         }).done(function (data) {
