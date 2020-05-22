@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<hibernate-mapping xmlns="http://www.hibernate.org/xsd/hibernate-mapping">
+    <class name="ru.job4j.carsplace.models.Body" table="body_gen">
+        <id name="id">
+            <generator class="identity"/>
+        </id>
+        <many-to-one name="generation" class="ru.job4j.carsplace.models.Generation" column="gen_id"/>
+        <many-to-one name="bodyName" class="ru.job4j.carsplace.models.BodyName" column="body_id"/>
+        <many-to-one name="doors" class="ru.job4j.carsplace.models.Doors" column="doors_id"/>
+        <many-to-one name="engine" class="ru.job4j.carsplace.models.Engine" column="engine_id"/>
+        <set name="allDoors" table="doors" inverse="true" fetch="select" lazy="true">
+            <key>
+                <column name="body_gen_id" not-null="true"/>
+            </key>
+            <one-to-many class="ru.job4j.carsplace.models.Doors"/>
+        </set>
+        <set name="allEngines" table="engine" lazy="true" fetch="select" inverse="true">
+            <key>
+                <column name="body_gen_id"/>
+            </key>
+            <one-to-many class="ru.job4j.carsplace.models.Engine"/>
+        </set>
+    </class>
+</hibernate-mapping>

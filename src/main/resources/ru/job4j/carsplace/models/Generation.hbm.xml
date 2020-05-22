@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<hibernate-mapping xmlns="http://www.hibernate.org/xsd/hibernate-mapping">
+    <class name="ru.job4j.carsplace.models.Generation" table="generation">
+        <id name="id">
+            <generator class="identity"/>
+        </id>
+        <property name="name"/>
+        <property name="startYear" column="start_year"/>
+        <property name="endYear" column="end_year"/>
+        <many-to-one name="model" class="ru.job4j.carsplace.models.Model" column="model_id"/>
+        <property name="production"/>
+        <set name="allBody" table="body_gen" lazy="true" fetch="select" inverse="true">
+            <key>
+                <column name="gen_id" not-null="true"/>
+            </key>
+            <one-to-many class="ru.job4j.carsplace.models.Body"/>
+        </set>
+    </class>
+</hibernate-mapping>

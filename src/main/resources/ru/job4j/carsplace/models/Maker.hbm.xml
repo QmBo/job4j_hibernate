@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<hibernate-mapping xmlns="http://www.hibernate.org/xsd/hibernate-mapping">
+    <class name="ru.job4j.carsplace.models.Maker" table="maker">
+        <id name="id">
+            <generator class="identity"/>
+        </id>
+        <property name="name"/>
+        <set name="allModels" table="model" inverse="true" fetch="select" lazy="true">
+            <key>
+                <column name="maker_id" not-null="true"/>
+            </key>
+            <one-to-many class="ru.job4j.carsplace.models.Model"/>
+        </set>
+    </class>
+</hibernate-mapping>

@@ -1,5 +1,6 @@
 package ru.job4j.todolist.logic;
 
+import ru.job4j.Store;
 import ru.job4j.todolist.models.Item;
 
 import java.util.List;
@@ -43,29 +44,25 @@ public class MemoryStore implements Store<Item> {
     /**
      * Update Item.
      * @param element new data to item
-     * @return updated Item.
      */
     @Override
-    public Item update(Item element) {
+    public void update(Item element) {
         Item result = this.findById(element);
         if (result != null) {
             this.list.add(result.getId(), element);
         }
-        return result;
     }
 
     /**
      * Delete Item.
      * @param element item to delete
-     * @return deleted Item.
      */
     @Override
-    public Item delete(Item element) {
+    public void delete(Item element) {
         Item result = this.findById(element);
         if (result != null) {
             this.list.remove(element);
         }
-        return result;
     }
 
     /**

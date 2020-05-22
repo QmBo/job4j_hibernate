@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<hibernate-mapping>
+<hibernate-mapping xmlns="http://www.hibernate.org/xsd/hibernate-mapping">
     <class name="ru.job4j.hello.models.User" table="users">
         <id name="id">
             <generator class="identity"/>
         </id>
         <property name="expired" type="timestamp"/>
         <property name="name"/>
+        <property name="login"/>
+        <property name="password"/>
+        <set name="allAdd" table="ad" lazy="true" inverse="true" fetch="select">
+            <key>
+                <column name="add_owner_id" not-null="false"/>
+            </key>
+            <one-to-many class="ru.job4j.carsplace.models.Add"/>
+        </set>
     </class>
 </hibernate-mapping>

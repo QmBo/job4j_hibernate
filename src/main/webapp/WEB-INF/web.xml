@@ -23,4 +23,74 @@
         <servlet-name>AddTaskServlet</servlet-name>
         <url-pattern>/todo/add</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AddServlet</servlet-name>
+        <servlet-class>ru.job4j.carsplace.servlets.OrdersServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddServlet</servlet-name>
+        <url-pattern>/carsplace/orders</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CreateServlet</servlet-name>
+        <servlet-class>ru.job4j.carsplace.servlets.CreateServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CreateServlet</servlet-name>
+        <url-pattern>/carsplace/create</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>ru.job4j.carsplace.servlets.Login</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/carsplace/login</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>ru.job4j.carsplace.servlets.Logout</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/carsplace/logout</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DownloadServlet</servlet-name>
+        <servlet-class>ru.job4j.carsplace.servlets.DownloadServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DownloadServlet</servlet-name>
+        <url-pattern>/carsplace/bin/images</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>EditServlet</servlet-name>
+        <servlet-class>ru.job4j.carsplace.servlets.EditServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EditServlet</servlet-name>
+        <url-pattern>/carsplace/edit</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>CreateFilter</filter-name>
+        <filter-class>ru.job4j.carsplace.servlets.AuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CreateFilter</filter-name>
+        <url-pattern>/carsplace/add/*</url-pattern>
+    </filter-mapping>
+
 </web-app>

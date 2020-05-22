@@ -10,8 +10,18 @@
 
         <mapping resource="ru/job4j/hello/models/User.hbm.xml"/>
         <mapping resource="ru/job4j/todolist/models/Item.hbm.xml"/>
-        <mapping resource="ru/job4j/carsplase/models/Engine.hbm.xml"/>
-        <mapping class="ru.job4j.carsplase.models.Car"/>
-        <mapping class="ru.job4j.carsplase.models.Driver"/>
+        <mapping resource="ru/job4j/carsplace/models/Engine.hbm.xml"/>
+        <mapping class="ru.job4j.carsplace.models.Car"/>
+        <mapping class="ru.job4j.carsplace.models.Driver"/>
+        <mapping resource="ru/job4j/carsplace/models/Maker.hbm.xml"/>
+        <mapping resource="ru/job4j/carsplace/models/Model.hbm.xml"/>
+        <mapping resource="ru/job4j/carsplace/models/Generation.hbm.xml"/>
+        <mapping resource="ru/job4j/carsplace/models/Body.hbm.xml"/>
+        <mapping class="ru.job4j.carsplace.models.Drive"/>
+        <mapping class="ru.job4j.carsplace.models.Doors"/>
+        <mapping class="ru.job4j.carsplace.models.BodyName"/>
+        <mapping class="ru.job4j.carsplace.models.GearBox"/>
+        <mapping resource="ru/job4j/carsplace/models/Add.hbm.xml"/>
+        <mapping class="ru.job4j.carsplace.models.Photo"/>
     </session-factory>
 </hibernate-configuration>
