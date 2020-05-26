@@ -2,7 +2,7 @@ package ru.job4j.todolist.servlet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.job4j.todolist.logic.JSONBuilder;
+import ru.job4j.JSONBuilder;
 import ru.job4j.todolist.logic.MainLogic;
 import ru.job4j.todolist.models.Item;
 

@@ -20,14 +20,14 @@
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
     <script>
-        var host = 'localhost';
-        var port = '8080';
+        const host = 'localhost';
+        const port = '8080';
 
         function showDone() {
-            var show = document.getElementById('showDone').checked;
+            const show = document.getElementById('showDone').checked;
             if (!show) {
-                var rows = $('input[name="row"]');
-                for (var i = 0; i < rows.length; i++) {
+                const rows = $('input[name="row"]');
+                for (let i = 0; i < rows.length; i++) {
                     if (rows[i].checked) {
                         $('#' + rows[i].id).parent().parent().attr('class','sr-only');
                     }
@@ -38,7 +38,7 @@
         }
 
         function doneItem(id) {
-            var val = document.getElementById(id).checked;
+            const val = document.getElementById(id).checked;
             $.post(
                 'http://' + host + ':' + port + '/hibernate/todo/items',
                 {"id": id, "done": val}
@@ -50,8 +50,8 @@
         }
 
         function showItemAndReleaseButton(data) {
-            if (data.length > 2) {
-                var pars = JSON.parse(data);
+            if (data.length > 4) {
+                const pars = JSON.parse(data);
                 $('thead').removeClass('sr-only');
                 pars.forEach(function (item) {
                     $('thead').after(
@@ -79,8 +79,8 @@
         }
 
         function addItem() {
-            var desc = $('#description');
-            var val = desc.val();
+            const desc = $('#description');
+            const val = desc.val();
             if (val !== "") {
                 $('#button').attr('disable', 'disable');
                 sendItem(val);

@@ -1,13 +1,10 @@
 package ru.job4j.todolist.logic;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
+import ru.job4j.DBConnect;
+import ru.job4j.Store;
 import ru.job4j.todolist.models.Item;
-
 import java.util.*;
-import java.util.function.Function;
+
 
 /**
  * DBStore
@@ -17,7 +14,7 @@ import java.util.function.Function;
  */
 public class DBStore implements Store<Item> {
     private static final Store<Item> INSTANCE = new DBStore();
-    private static final SessionFactory FACTORY =  new Configuration().configure().buildSessionFactory();
+    private final DBConnect connect = DBConnect.getInstance();
 
     /**
      * Private constructor.
@@ -40,7 +37,7 @@ public class DBStore implements Store<Item> {
      */
     @Override
     public Item add(final Item item) {
-        return this.tx(session -> {
+        return this.connect.tx(session -> {
             session.saveOrUpdate(item);
             return item;
         });
@@ -49,21 +46,19 @@ public class DBStore implements Store<Item> {
     /**
      * Update Item.
      * @param item new data to item
-     * @return updated Item.
      */
     @Override
-    public Item update(final Item item) {
-        return this.add(item);
+    public void update(final Item item) {
+        this.add(item);
     }
 
     /**
      * Delete Item.
      * @param item item to delete
-     * @return deleted Item.
      */
     @Override
-    public Item delete(final Item item) {
-        return this.tx(session -> {
+    public void delete(final Item item) {
+        this.connect.tx(session -> {
             Item result = this.findById(item);
             session.delete(item);
             return result;
@@ -76,14 +71,8 @@ public class DBStore implements Store<Item> {
      */
     @Override
     public List<Item> findAll() {
-        return this.tx(session -> {
-            List<Item> result = new LinkedList<>();
-            List list = session.createQuery("from Item order by create asc").list();
-            for (Object o : list) {
-                if (o != null) {
-                    result.add((Item) o);
-                }
-            }
+        return this.connect.tx(session -> {
+            List<Item> result  = session.createQuery("from Item order by create asc", Item.class).list();
             return result.size() == 0 ? null : result;
         });
     }
@@ -95,27 +84,6 @@ public class DBStore implements Store<Item> {
      */
     @Override
     public Item findById(final Item item) {
-        return this.tx(session -> session.find(Item.class, item.getId()));
-    }
-
-    /**
-     * Transaction.
-     * @param command command
-     * @param <T> result
-     * @return transaction of command
-     */
-    private <T> T tx(final Function<Session, T> command) {
-        final Session session = FACTORY.openSession();
-        final Transaction tx = session.beginTransaction();
-        try {
-            T rsl = command.apply(session);
-            tx.commit();
-            return rsl;
-        } catch (final Exception e) {
-            session.getTransaction().rollback();
-            throw e;
-        } finally {
-            session.close();
-        }
+        return this.connect.tx(session -> session.find(Item.class, item.getId()));
     }
 }

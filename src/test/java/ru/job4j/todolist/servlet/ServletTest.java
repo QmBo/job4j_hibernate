@@ -10,7 +10,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import ru.job4j.todolist.logic.DBStore;
 import ru.job4j.todolist.logic.MemoryStore;
-import ru.job4j.todolist.logic.Store;
+import ru.job4j.Store;
 import ru.job4j.todolist.models.Item;
 
 import javax.servlet.ServletOutputStream;

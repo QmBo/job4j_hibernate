@@ -1,6 +1,7 @@
 package ru.job4j.todolist.logic;
 
 import org.junit.Test;
+import ru.job4j.Store;
 import ru.job4j.todolist.models.Item;
 
 import static org.hamcrest.MatcherAssert.assertThat;

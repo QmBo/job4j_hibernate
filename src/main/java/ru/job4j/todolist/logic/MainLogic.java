@@ -1,5 +1,6 @@
 package ru.job4j.todolist.logic;
 
+import ru.job4j.Store;
 import ru.job4j.todolist.models.Item;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,10 +61,10 @@ public class MainLogic {
      * @param req request
      */
     public void doneChang(final HttpServletRequest req) {
-        int id = Integer.valueOf(req.getParameter(ID));
+        int id = Integer.parseInt(req.getParameter(ID));
         Item old = this.store.findById(new Item().setId(id));
         if (old != null) {
-            old.setDone(Boolean.valueOf(req.getParameter(DONE)));
+            old.setDone(Boolean.parseBoolean(req.getParameter(DONE)));
             this.store.update(old);
         }
     }

@@ -1,43 +1,57 @@
-package ru.job4j.carsplase.models;
-
+package ru.job4j.carsplace.models;
 
 import javax.persistence.*;
 import java.util.StringJoiner;
 
 /**
- * Driver
+ * Drive
+ *
  * @author Victor Egorov (qrioflat@gmail.com).
  * @version 0.1
- * @since 22.04.2020
+ * @since 21.05.2020
  */
 @Entity
-@Table(name = "driver")
-public class Driver {
+@Table(name = "drive")
+public class Drive implements KeyValue {
     private int id;
     private String name;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return this.id;
     }
 
-    public Driver setId(int id) {
+    /**
+     * Sets id.
+     *
+     * @param id the id
+     * @return the id
+     */
+    public Drive setId(int id) {
         this.id = id;
         return this;
     }
+
     @Column
     public String getName() {
         return this.name;
     }
 
-    public Driver setName(String name) {
+    /**
+     * Sets name.
+     *
+     * @param name the name
+     * @return the name
+     */
+    public Drive setName(String name) {
         this.name = name;
         return this;
     }
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", Driver.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", Drive.class.getSimpleName() + "[", "]")
                 .add("id=" + id)
                 .add("name='" + name + "'")
                 .toString();

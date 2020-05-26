@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Cars Place</title>
+    <!--suppress JSUnresolvedLibraryURL -->
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2>Cars Place</h2>
+        </div>
+    </div>
+    <div class="row justify-content-between" id="head">
+        <div class="col-sm-4">
+            <a class="btn btn-success" href="add">
+                Подать объявление
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h3 id="noOrders">Пока нет ни одного объявления</h3>
+        </div>
+    </div>
+</div>
+<div class="container" id="orders">
+</div>
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="http://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+<script>
+    const host = 'localhost';
+    const port = '8080';
+
+    let login = document.cookie;
+    if (login !== "undefined" && login.concat("login")) {
+        login = document.cookie.split("=")[1];
+    }
+
+    $('.alert').alert('close');
+    $.ajax({
+        url: 'http://' + host + ':' + port + '/hibernate/carsplace/orders',
+        type: 'GET',
+        dataType: 'text'
+    }).done(function (data) {
+        showOrders(data);
+    }).fail(function (err) {
+        alert(err.statusText);
+    });
+
+    if (login !== "") {
+        $("#head").append(
+            '<div class="col-2">\n' +
+            '<a href="logout" class="btn btn-warning" title="Logout">Выйти</a>\n' +
+            '</div>'
+        )
+    } else {
+        $("#head").append(
+            '<div class="col-2">\n' +
+            '<a href="login" class="btn btn-warning" title="Logout">Войти</a>\n' +
+            '</div>'
+        )
+    }
+
+    function changeStatus(itemId) {
+        let cardId = "#card" + itemId;
+        let data;
+        const url = 'http://' + host + ':' + port + '/hibernate/carsplace/edit';
+        if ($(cardId).hasClass("text-white bg-secondary")) {
+            $(cardId).removeClass("text-white bg-secondary");
+            data = true;
+        } else {
+            $(cardId).addClass("text-white bg-secondary");
+            data = false;
+        }
+        $.post(url, {"id": itemId, "placed": data});
+    }
+
+    function showOrders(data) {
+        if (data.length > 4) {
+            const pars = JSON.parse(data);
+            $('thead').removeClass('sr-only');
+            $('#noOrders').addClass('sr-only');
+            $("#form").prepend("<input type='hidden' name='login' value='" + login + "' id='login'>");
+            pars.forEach(function (item) {
+                let cardId = "card" + item.id;
+                let price = item.price + "\t&#8381;";
+                let cardClass = "list-group-item list-group-item-action";
+                if (!item.placed) {
+                    price = "Продано";
+                    cardClass += " text-white bg-secondary";
+                }
+                $('#orders').append(
+                    '<div class="card mb-12">\n' +
+                    '    <a href="/carsplece/order?id=' + item.id + '" class="' + cardClass + '" id="' + cardId + '">\n' +
+                    '        <div class="row no-gutters">\n' +
+                    '            <div class="col-md-8">\n' +
+                    '                <div class="card-body">\n' +
+                    '                    <div class="row justify-content-between">\n' +
+                    '                        <div class="col-6">\n' +
+                    '                            <h5 class="card-title">' + item.name + '</h5>\n' +
+                    '                        </div>\n' +
+                    '                        <div class="col-3">\n' +
+                    '                            <h5 class="card-title">' + price + '</h5>\n' +
+                    '                        </div>\n' +
+                    '                    </div>\n' +
+                    '                    <p class="card-text">' + item.car.maker + ' ' + item.car.model + ' ' + item.car.gen + ' ' + item.year + ' года выпуска,  пробег ' + item.odd + 'км.</p>\n' +
+                    '                    <p class="card-text">Двигатель ' + item.car.engine + ', Привод ' + item.car.drive + ', ' + item.car.gearBox + ', ' + item.car.body + ', колличество дверей - ' + item.car.doors + '</p>\n' +
+                    '                    <p class="card-text" id="' + item.id  + '">' + item.desc + '</p>\n' +
+                    '                    <p class="card-text"><small class="text-muted">' + item.create + '</small></p>\n' +
+                    '                </div>\n' +
+                    '            </div>\n' +
+                    '            <div class="col-md-4">\n' +
+                    '                <img src="bin/images?name=' + item.photos[0].name + '" alt="" class="img-thumbnail">\n' +
+                    '            </div>\n' +
+                    '        </div>\n' +
+                    '    </a>\n' +
+                    '</div>'
+                );
+                // noinspection EqualityComparisonWithCoercionJS
+                if (item.user == login) {
+                    const name = "#" + item.id;
+                    let checkId = "status" + item.id
+                    $(name).after(
+                        `<input type="checkbox" id="${checkId}" class="btn btn-primary" onchange="changeStatus(${item.id})">Продано</input>`
+                    );
+                    if (!item.placed) {
+                        checkId = "#" + checkId;
+                        $(checkId).attr("checked", "checked");
+                    }
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

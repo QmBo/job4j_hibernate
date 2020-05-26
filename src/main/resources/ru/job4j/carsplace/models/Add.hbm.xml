@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<hibernate-mapping xmlns="http://www.hibernate.org/xsd/hibernate-mapping">
+    <class name="ru.job4j.carsplace.models.Add" table="ad">
+        <id name="id">
+            <generator class="identity"/>
+        </id>
+        <property name="name"/>
+        <property name="odd"/>
+        <property name="description"/>
+        <property name="placed"/>
+        <property name="price"/>
+        <property name="createTime" column="create_time"/>
+        <property name="year"/>
+        <many-to-one name="car" class="ru.job4j.carsplace.models.Car" column="car_id" cascade="all" lazy="false"/>
+        <many-to-one name="addOwner" class="ru.job4j.hello.models.User" column="add_owner_id" lazy="false"/>
+        <set name="allPhotos" table="photos_ref" lazy="false" inverse="true">
+            <key>
+                <column name="ad_id"/>
+            </key>
+            <many-to-many class="ru.job4j.carsplace.models.Photo" >
+                <column name="photo_id"/>
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>
