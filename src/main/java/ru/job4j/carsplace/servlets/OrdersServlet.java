@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.StringJoiner;
 
 /**
  * OrdersServlet
@@ -41,17 +40,18 @@ public class OrdersServlet extends HttpServlet {
     }
 
     /**
-     * Return all items as JSON like. If not items return "".
+     * Return all items as JSON like.
      * "[{\"desc\": \"super\", \"id\": 11, \"done\": true}, {\"desc\": \"2\", \"id\": 12, \"done\": false}]".
+     * If not items return "[]"
      *
      * @return JSON string
      */
     private String allAdd() {
+        String result = "[]";
         List<Add> items = this.logic.getAllAdd();
-        StringJoiner joiner = new StringJoiner(", ", "[", "]");
         if (items != null) {
-            items.forEach(add -> joiner.add(JSONBuilder.build(add)));
+            result = JSONBuilder.build(items);
         }
-        return joiner.toString();
+        return result;
     }
 }

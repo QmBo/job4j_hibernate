@@ -2,7 +2,7 @@ package ru.job4j.carsplace.servlets;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.job4j.JSONBuilder;
+import org.json.JSONStringer;
 import ru.job4j.carsplace.logic.MainLogic;
 import ru.job4j.carsplace.models.KeyValue;
 
@@ -213,10 +213,19 @@ public class CreateServlet extends HttpServlet {
      * @return JSON string
      */
     private String load(final List<KeyValue> keyValueSet) {
-        StringJoiner joiner = new StringJoiner(", ", "[", "]");
+        String result = "[]";
         if (keyValueSet != null) {
-            keyValueSet.forEach(key -> joiner.add(JSONBuilder.build(key)));
+            JSONStringer array = new JSONStringer();
+            array.array();
+            keyValueSet.forEach(key -> array
+                    .object()
+                    .key("id").value(key.getId())
+                    .key("name").value(key.getName())
+                    .endObject()
+            );
+            array.endArray();
+            result = array.toString();
         }
-        return joiner.toString();
+        return result;
     }
 }

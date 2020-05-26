@@ -118,7 +118,7 @@ public class CreateServletTest {
         assertThat(array.toString().contains("[]"), is(true));
         store.addModels(List.of(new Maker().setName("TestName").setId(7)));
         new CreateServlet().doGet(request, response);
-        assertThat(array.toString().contains("[{\"id\": 7, \"name\": \"TestName\"}]"), is(true));
+        assertThat(array.toString().contains("[{\"id\":7,\"name\":\"TestName\"}]"), is(true));
     }
 
     private static class EClass implements Enumeration<String> {
