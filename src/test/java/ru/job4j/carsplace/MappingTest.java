@@ -12,6 +12,7 @@ import ru.job4j.hello.models.User;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,6 +29,7 @@ public class MappingTest {
     private static final String ROSSY = "Rossy";
     private static final String MC_RAE = "McRae";
     private static final String GOLF = "Golf";
+    private static final String DEF_PHOTO = "default.png";
     private SessionFactory factory;
     @Before
     public void setUp() {
@@ -175,4 +177,43 @@ public class MappingTest {
         }
     }
 
+    @Test
+    public void whenGetMakersFromAddGroupByMakerThenIchMakerOnes() {
+        try (Session session = factory.openSession()) {
+            session.beginTransaction();
+            List<KeyValue> adds = session.createQuery(
+                    "from Maker as m where m.id in (select a.car.maker.id from Add as a group by a.car.maker.id)",
+                    KeyValue.class
+            ).list();
+            session.getTransaction().commit();
+            final int size = adds.size();
+            Set<String> names = new TreeSet<>(String::compareTo);
+            adds.forEach(keyValue -> names.add(keyValue.getName()));
+            assertThat(size, is(names.size()));
+        }
+    }
+
+    @SuppressWarnings("JpaQlInspection")
+    @Test
+    public void whenGetAddHasPhotosThenPhotosNameNotDefault() {
+        try (Session session = factory.openSession()) {
+            session.beginTransaction();
+            List<Add> adds =  session.createQuery(
+                    "from Add a where a.id in(select p.add.id from Photo p where p.name !=:defaultName) group by a",
+                    Add.class)
+                    .setParameter("defaultName", DEF_PHOTO)
+                    .list();
+            session.getTransaction().commit();
+            System.out.println(adds);
+            final int size = adds.size();
+            Set<Integer> names = new TreeSet<>(Integer::compareTo);
+            adds.forEach(keyValue -> names.add(keyValue.getId()));
+            assertThat(size, is(names.size()));
+            adds.forEach(add ->
+                    add.getAllPhotos().forEach(photo ->
+                            assertThat(photo.getName(), is(not(DEF_PHOTO)))
+                    )
+            );
+        }
+    }
 }

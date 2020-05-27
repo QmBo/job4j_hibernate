@@ -5,7 +5,7 @@
             <generator class="identity"/>
         </id>
         <property name="name"/>
-        <set name="allModels" table="model" inverse="true" fetch="select" lazy="true">
+        <set name="allModels" table="model" inverse="true" fetch="select" lazy="false">
             <key>
                 <column name="maker_id" not-null="true"/>
             </key>

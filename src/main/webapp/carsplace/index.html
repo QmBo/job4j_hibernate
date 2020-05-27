@@ -26,13 +26,29 @@
             </a>
         </div>
     </div>
+</div>
+<div class="container" style="margin-top: 10px;">
+    <div class="row sr-only" id="filter">
+        <div class="col-2">
+            <div class="row" style="margin-top: 10px;">
+                <button id="showLastDay" class="btn btn-light">Объявления за последние сутки</button>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <button id="showHavePhoto" class="btn btn-light">Только объявления с фотографией</button>
+            </div>
+            <div class="row" id="modelFilter" style="margin-top: 10px;">
+            </div>
+        </div>
+        <div class="col-10">
+            <div class="container" id="orders">
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col">
             <h3 id="noOrders">Пока нет ни одного объявления</h3>
         </div>
     </div>
-</div>
-<div class="container" id="orders">
 </div>
 <!--suppress JSUnresolvedLibraryURL -->
 <script src="http://code.jquery.com/jquery-3.5.1.js"
@@ -47,35 +63,77 @@
 <script>
     const host = 'localhost';
     const port = '8080';
+    let login;
 
-    let login = document.cookie;
-    if (login !== "undefined" && login.concat("login")) {
-        login = document.cookie.split("=")[1];
-    }
-
-    $('.alert').alert('close');
-    $.ajax({
-        url: 'http://' + host + ':' + port + '/hibernate/carsplace/orders',
-        type: 'GET',
-        dataType: 'text'
-    }).done(function (data) {
-        showOrders(data);
-    }).fail(function (err) {
-        alert(err.statusText);
+    $(document).ready(function () {
+        login = document.cookie;
+        if (login !== "undefined" && login.concat("login")) {
+            login = document.cookie.split("=")[1];
+        }
+        if (login !== "") {
+            $("#head").append(
+                '<div class="col-2">\n' +
+                '<a href="logout" class="btn btn-warning" title="Logout">Выйти</a>\n' +
+                '</div>'
+            )
+        } else {
+            $("#head").append(
+                '<div class="col-2">\n' +
+                '<a href="login" class="btn btn-warning" title="Logout">Войти</a>\n' +
+                '</div>'
+            )
+        }
+        loadAdd("maker=0");
+        $.ajax({
+            url: 'http://' + host + ':' + port + '/hibernate/carsplace/create',
+            type: 'GET',
+            data: "havingMaker=",
+            dataType: 'text'
+        }).done(function(data) {
+            setCode(data, "modelFilter");
+        }).fail(function(err){
+            alert(err.statusText);
+        });
     });
 
-    if (login !== "") {
-        $("#head").append(
-            '<div class="col-2">\n' +
-            '<a href="logout" class="btn btn-warning" title="Logout">Выйти</a>\n' +
-            '</div>'
-        )
-    } else {
-        $("#head").append(
-            '<div class="col-2">\n' +
-            '<a href="login" class="btn btn-warning" title="Logout">Войти</a>\n' +
-            '</div>'
-        )
+
+
+    $('#modelFilter').change(function () {
+        const makerId = $('[name=modelFilter]').val();
+        loadAdd("maker=" + makerId);
+    });
+
+    $('#showHavePhoto').click(function (){
+        loadAdd("hasPhoto");
+    });
+    $('#showLastDay').click(function () {
+        loadAdd("showLastDay");
+    });
+
+
+    function setCode(data, id) {
+        const toSet = "#" + id;
+        const name = "[name='" + id + "']";
+        $(name).remove();
+        $(toSet).append('<select class="custom-select" name="' + id + '"><option value="0">&#8211;</option></select>');
+        if (data.length > 4) {
+            JSON.parse(data).forEach(function (item) {
+                $(name).append('<option value="' + item.id + '">' + item.name + '</option>');
+            });
+        }
+    }
+
+    function loadAdd(date) {
+        $.ajax({
+            url: 'http://' + host + ':' + port + '/hibernate/carsplace/orders',
+            type: 'GET',
+            dataType: 'text',
+            data: date
+        }).done(function (data) {
+            showOrders(data);
+        }).fail(function (err) {
+            alert(err.statusText);
+        });
     }
 
     function changeStatus(itemId) {
@@ -93,7 +151,9 @@
     }
 
     function showOrders(data) {
+        $("#orders").empty();
         if (data.length > 4) {
+            $("#filter").removeClass('sr-only');
             const pars = JSON.parse(data);
             $('thead').removeClass('sr-only');
             $('#noOrders').addClass('sr-only');

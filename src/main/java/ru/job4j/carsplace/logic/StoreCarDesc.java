@@ -4,10 +4,12 @@ import ru.job4j.Store;
 import ru.job4j.carsplace.models.*;
 import ru.job4j.hello.models.User;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
  * StoreCarDesc
+ *
  * @author Victor Egorov (qrioflat@gmail.com).
  * @version 0.1
  * @since 21.05.2020
@@ -103,4 +105,34 @@ public interface StoreCarDesc extends Store<Car> {
      * @return the list
      */
     List<Add> allAdd();
+
+    /**
+     * Add of maker list.
+     *
+     * @param setId the set id
+     * @return the list
+     */
+    List<Add> addOfMaker(Maker setId);
+
+    /**
+     * Gets makers of add.
+     *
+     * @return the makers of add
+     */
+    List<KeyValue> getMakersOfAdd();
+
+    /**
+     * Gets add has photo.
+     *
+     * @return the add has photo
+     */
+    List<Add> getAddHasPhoto();
+
+    /**
+     * Gets add after date.
+     *
+     * @param date the date
+     * @return the add after date
+     */
+    List<Add> getAddAfterDate(Timestamp date);
 }

@@ -43,6 +43,7 @@ public class Photo {
      *
      * @return the add
      */
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "photos_ref", joinColumns = {
             @JoinColumn(name = "photo_id", nullable = false, updatable = false)},

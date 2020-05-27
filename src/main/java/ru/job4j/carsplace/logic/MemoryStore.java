@@ -3,6 +3,7 @@ package ru.job4j.carsplace.logic;
 import ru.job4j.carsplace.models.*;
 import ru.job4j.hello.models.User;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -93,6 +94,26 @@ public class MemoryStore implements StoreCarDesc {
     @Override
     public List<Add> allAdd() {
         return this.addList;
+    }
+
+    @Override
+    public List<Add> addOfMaker(Maker setId) {
+        return null;
+    }
+
+    @Override
+    public List<KeyValue> getMakersOfAdd() {
+        return null;
+    }
+
+    @Override
+    public List<Add> getAddHasPhoto() {
+        return null;
+    }
+
+    @Override
+    public List<Add> getAddAfterDate(Timestamp date) {
+        return null;
     }
 
     @Override

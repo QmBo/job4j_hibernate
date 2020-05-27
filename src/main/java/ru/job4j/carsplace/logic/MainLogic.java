@@ -304,4 +304,45 @@ public class MainLogic {
             });
         }
     }
+
+    /**
+     * Gets makers of add.
+     *
+     * @return the makers of add
+     */
+    public List<KeyValue> getMakersOfAdd() {
+        return this.store.getMakersOfAdd();
+    }
+
+    /**
+     * Add of maker list.
+     *
+     * @param req the req
+     * @return the list
+     */
+    public List<Add> addOfMaker(final HttpServletRequest req) {
+       return this.get(id -> this.store.addOfMaker(new Maker().setId(id)),
+               MAKER, req);
+    }
+
+    /**
+     * Gets add has photo.
+     *
+     * @return the add has photo
+     */
+    public List<Add> getAddHasPhoto() {
+        return this.store.getAddHasPhoto();
+    }
+
+    /**
+     * Gets add of last day.
+     *
+     * @return the add of last day
+     */
+    public List<Add> getAddOfLastDay() {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.HOUR, -24);
+        return this.store.getAddAfterDate(new Timestamp(calendar.getTimeInMillis()));
+    }
 }

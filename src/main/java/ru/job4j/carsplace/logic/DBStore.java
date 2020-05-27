@@ -4,6 +4,7 @@ import ru.job4j.DBConnect;
 import ru.job4j.carsplace.models.*;
 import ru.job4j.hello.models.User;
 
+import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * @since 21.05.2020
  */
 public class DBStore implements StoreCarDesc {
+    private static final String DEF_PHOTO = "default.png";
     private static final StoreCarDesc STORE = new DBStore();
     private final DBConnect connect = DBConnect.getInstance();
 
@@ -152,5 +154,51 @@ public class DBStore implements StoreCarDesc {
     public List<Add> allAdd() {
         return this.connect.tx(session ->
                 session.createQuery("from Add as a order by a.createTime desc", Add.class).list());
+    }
+
+    @Override
+    public List<Add> addOfMaker(Maker maker) {
+        List<Add> result;
+        if (maker.getId() == 0) {
+            result = this.allAdd();
+        } else {
+            result = this.connect.tx(session ->
+                    session.createQuery("from Add as a where a.car.maker.id= :makerId", Add.class)
+                            .setParameter("makerId", maker.getId())
+                            .list()
+            );
+        }
+        return result;
+    }
+
+    @Override
+    public List<KeyValue> getMakersOfAdd() {
+        return this.connect.tx(session ->
+                session.createQuery(
+                        "from Maker as m where m.id in(select a.car.maker.id from Add as a group by a.car.maker.id)",
+                        KeyValue.class)
+                        .list()
+        );
+    }
+
+    @SuppressWarnings("JpaQlInspection")
+    @Override
+    public List<Add> getAddHasPhoto() {
+        return this.connect.tx(session ->
+                session.createQuery(
+                        "from Add a where a.id in(select p.add.id from Photo p where p.name !=:defaultName) group by a",
+                        Add.class)
+                        .setParameter("defaultName", DEF_PHOTO)
+                        .list()
+        );
+    }
+
+    @Override
+    public List<Add> getAddAfterDate(final Timestamp date) {
+        return this.connect.tx(session ->
+                session.createQuery("from Add a where a.createTime > :time", Add.class)
+                .setParameter("time", date)
+                        .list()
+        );
     }
 }

@@ -36,8 +36,9 @@ public class CreateServlet extends HttpServlet {
     private static final String LOGIN = "login";
     private static final String NUMBERS = "numbersOfPhoto";
     private static final String PHOTO_ID_0 = "photoId0";
-    private static final Object DEF_PHOTO = "default.png";
+    private static final String DEF_PHOTO = "default.png";
     private static final String YEAR = "year";
+    private static final String HAVING_MAKER = "havingMaker";
     private final MainLogic logic = MainLogic.getInstance();
     private final Map<String, Function<HttpServletRequest, String>> getDispatch = new HashMap<>();
 
@@ -52,6 +53,7 @@ public class CreateServlet extends HttpServlet {
         }
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         resp.setContentType("text/plain");
@@ -96,7 +98,17 @@ public class CreateServlet extends HttpServlet {
         this.getDispatch.put(SECOND, this.loadDrive());
         this.getDispatch.put(ENGINE, this.loadGearBox());
         this.getDispatch.put(LOGIN, this.getLogin());
+        this.getDispatch.put(HAVING_MAKER, this.havingMaker());
         return this.getDispatch;
+    }
+
+    /**
+     * Having maker function.
+     *
+     * @return the function
+     */
+    private Function<HttpServletRequest, String> havingMaker() {
+        return req -> this.load(this.logic.getMakersOfAdd());
     }
 
     /**
@@ -207,7 +219,7 @@ public class CreateServlet extends HttpServlet {
 
     /**
      * Return all items as JSON. If not items return "".
-     * "[{\"id\": 1, \"name\": \"VW\"}, {\"id\": 2, \"name\": "BMW"}]".
+     * "[{"id": 1,"name":"VW"}, {"id":2,"name":"BMW"}]".
      *
      * @param keyValueSet key/value set
      * @return JSON string
