@@ -1,6 +1,5 @@
 package ru.job4j.carsplace.logic;
 
-import ru.job4j.Store;
 import ru.job4j.carsplace.models.*;
 import ru.job4j.hello.models.User;
 
@@ -14,7 +13,15 @@ import java.util.List;
  * @version 0.1
  * @since 21.05.2020
  */
-public interface StoreCarDesc extends Store<Car> {
+public interface StoreCarDesc {
+    /**
+     * Add car.
+     *
+     * @param element the element
+     * @return the car
+     */
+    Car add(final Car element);
+
     /**
      * Gets all makers.
      *
@@ -107,12 +114,12 @@ public interface StoreCarDesc extends Store<Car> {
     List<Add> allAdd();
 
     /**
-     * Add of maker list.
+     * Gets add of maker.
      *
      * @param setId the set id
-     * @return the list
+     * @return the add of maker
      */
-    List<Add> addOfMaker(Maker setId);
+    List<Add> getAddOfMaker(Maker setId);
 
     /**
      * Gets makers of add.

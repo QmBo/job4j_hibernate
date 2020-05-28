@@ -21,7 +21,7 @@ public class Add {
     private long odd;
     private boolean placed;
     private User addOwner;
-    private Timestamp createTime;
+    private Timestamp createTime = new Timestamp(System.currentTimeMillis());
     private Set<Photo> allPhotos;
     private int year;
 

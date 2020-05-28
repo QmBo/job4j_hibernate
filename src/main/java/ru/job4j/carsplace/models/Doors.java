@@ -15,7 +15,7 @@ import java.util.StringJoiner;
 public class Doors implements KeyValue {
     private int id;
     private String name;
-//    private Body body;
+    private Body body;
 
     @Override
     @Id
@@ -49,6 +49,29 @@ public class Doors implements KeyValue {
      */
     public Doors setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    /**
+     * Gets body gen id.
+     *
+     * @return the body gen id
+     */
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @ManyToOne
+    @JoinColumn(name = "body_gen_id", foreignKey = @ForeignKey(name = "BODY_GEN_ID_FK"))
+    public Body getBodyGenId() {
+        return this.body;
+    }
+
+    /**
+     * Sets body gen id.
+     *
+     * @param bodyGenId the body gen id
+     * @return the body gen id
+     */
+    public Doors setBodyGenId(Body bodyGenId) {
+        this.body = bodyGenId;
         return this;
     }
 

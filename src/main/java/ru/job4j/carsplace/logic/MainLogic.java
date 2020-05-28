@@ -321,7 +321,7 @@ public class MainLogic {
      * @return the list
      */
     public List<Add> addOfMaker(final HttpServletRequest req) {
-       return this.get(id -> this.store.addOfMaker(new Maker().setId(id)),
+       return this.get(id -> this.store.getAddOfMaker(new Maker().setId(id)),
                MAKER, req);
     }
 

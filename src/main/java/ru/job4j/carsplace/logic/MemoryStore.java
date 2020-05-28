@@ -97,7 +97,7 @@ public class MemoryStore implements StoreCarDesc {
     }
 
     @Override
-    public List<Add> addOfMaker(Maker setId) {
+    public List<Add> getAddOfMaker(Maker setId) {
         return null;
     }
 
@@ -118,24 +118,6 @@ public class MemoryStore implements StoreCarDesc {
 
     @Override
     public Car add(Car element) {
-        return null;
-    }
-
-    @Override
-    public void update(Car element) {
-    }
-
-    @Override
-    public void delete(Car element) {
-    }
-
-    @Override
-    public List<Car> findAll() {
-        return null;
-    }
-
-    @Override
-    public Car findById(Car element) {
         return null;
     }
 }

@@ -44,24 +44,6 @@ public class DBStore implements StoreCarDesc {
     }
 
     @Override
-    public void update(final Car element) {
-    }
-
-    @Override
-    public void delete(final Car element) {
-    }
-
-    @Override
-    public List<Car> findAll() {
-        return this.connect.tx(session -> session.createQuery("from Car", Car.class).list());
-    }
-
-    @Override
-    public Car findById(final Car element) {
-        return null;
-    }
-
-    @Override
     public List<KeyValue> getAllMakers() {
         return this.connect.tx(session -> session.createQuery("from Maker", KeyValue.class).list());
     }
@@ -157,7 +139,7 @@ public class DBStore implements StoreCarDesc {
     }
 
     @Override
-    public List<Add> addOfMaker(Maker maker) {
+    public List<Add> getAddOfMaker(Maker maker) {
         List<Add> result;
         if (maker.getId() == 0) {
             result = this.allAdd();
@@ -181,7 +163,6 @@ public class DBStore implements StoreCarDesc {
         );
     }
 
-    @SuppressWarnings("JpaQlInspection")
     @Override
     public List<Add> getAddHasPhoto() {
         return this.connect.tx(session ->

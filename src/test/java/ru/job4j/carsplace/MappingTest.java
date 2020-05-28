@@ -6,13 +6,13 @@ import org.hibernate.cfg.Configuration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.job4j.carsplace.logic.DBStore;
+import ru.job4j.carsplace.logic.StoreCarDesc;
 import ru.job4j.carsplace.models.*;
 import ru.job4j.hello.models.User;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.sql.Timestamp;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -31,6 +31,8 @@ public class MappingTest {
     private static final String GOLF = "Golf";
     private static final String DEF_PHOTO = "default.png";
     private SessionFactory factory;
+    private static final StoreCarDesc STORE = DBStore.getInstance();
+
     @Before
     public void setUp() {
         factory = new Configuration().configure().buildSessionFactory();
@@ -43,17 +45,17 @@ public class MappingTest {
     public void whenAddCarThenCarHawEngine() {
         try (Session session = factory.openSession()) {
             session.beginTransaction();
+            Engine engine = new Engine().setName(DIESEL);
+            session.saveOrUpdate(engine);
             Car car = new Car()
                     .setName("Saab")
-                    .setEngine(new Engine().setId(2));
+                    .setEngine(new Engine().setId(engine.getId()));
             session.save(car);
             int carId = car.getId();
             assertThat(carId, not(is(0)));
             session.evict(car);
             Car getCar = session.get(Car.class, carId);
             assertThat(getCar.getEngine().getName(), is(DIESEL));
-            session.evict(getCar);
-            session.delete(new Car().setId(carId));
             session.getTransaction().commit();
         }
     }
@@ -69,8 +71,7 @@ public class MappingTest {
             session.evict(driver);
             Driver driverGet = session.get(Driver.class, driverId);
             assertThat(driverGet.getName(), is(ROSSY));
-            assertThat(driver.getId(), is(driverId));
-            session.delete(driverGet);
+            assertThat(driverGet.getId(), is(driverId));
             session.getTransaction().commit();
         }
     }
@@ -83,12 +84,13 @@ public class MappingTest {
             Driver rossy = new Driver().setName(ROSSY);
             Driver mcRae = new Driver().setName(MC_RAE);
             Car golf = new Car().setName(GOLF);
-            Engine engine = new Engine().setId(2);
+            Engine engine = new Engine().setId(1);
             Set<Driver> drivers = new HashSet<>();
             drivers.add(mcRae);
             drivers.add(rossy);
             session.saveOrUpdate(rossy);
             session.saveOrUpdate(mcRae);
+            session.saveOrUpdate(new Engine().setName(DIESEL));
             golf.setDrivers(drivers).setEngine(engine);
             session.saveOrUpdate(golf);
             golfId = golf.getId();
@@ -102,118 +104,200 @@ public class MappingTest {
                     car.getDrivers().stream().map(Driver::getName).collect(Collectors.toSet()),
                     containsInAnyOrder(ROSSY, MC_RAE)
             );
-            Set<Driver> drivers = car.getDrivers();
-            System.out.println(car);
-            session.delete(car);
-            for (Driver driver : drivers) {
-                session.delete(driver);
-            }
             session.getTransaction().commit();
         }
     }
 
-    @Test
-    public void whenGetModelTheModelHaveMaker() {
-        try (Session session = factory.openSession()) {
-            session.beginTransaction();
-            Object[] makersName = session.createQuery("from Maker", Maker.class).list()
-                    .stream()
-                    .map(Maker::getName)
-                    .toArray();
-            List<Model> model = session.createQuery("from Model", Model.class).list();
-            session.getTransaction().commit();
-            for (Model car : model) {
-                System.out.println(car);
-                assertThat(car.getMaker().getName(), isOneOf(makersName));
-            }
-        }
-    }
 
-    @Test
-    public void whenAddAddThenAddAdd() {
+    private Add newAdd(String makerName) {
         try (Session session = factory.openSession()) {
             session.beginTransaction();
+            Maker maker = new Maker().setName(makerName);
+            Model model = new Model().setName("model");
+            Generation generation = new Generation().setName("generation");
+            BodyName bodyName = new BodyName().setName("bodyName");
+            Body body = new Body().setBodyName(bodyName);
+            Doors doors = new Doors().setName("doors");
+            Engine engine = new Engine().setName("engine");
+            Drive drive = new Drive().setName("drive");
+            GearBox gearBox = new GearBox().setName("gearBox");
+            User addOwner = new User().setName("addOwner");
+            session.save(maker);
+            session.save(model.setMaker(maker));
+            session.save(generation.setModel(model));
+            session.save(bodyName);
+            session.save(body.setGeneration(generation));
+            session.save(doors.setBodyGenId(body));
+            session.save(gearBox);
+            session.save(drive);
+            session.save(engine.setBody(body));
+            session.save(addOwner);
             Car car = new Car()
-                    .setMaker(new Maker().setId(1))
-                    .setModel(new Model().setId(2))
-                    .setGeneration(new Generation().setId(2))
-                    .setBody(new Body().setId(22))
-                    .setDoors(new Doors().setId(2))
-                    .setEngine(new Engine().setId(2))
-                    .setDrive(new Drive().setId(2))
-                    .setGearBox(new GearBox().setId(2));
+                    .setMaker(maker)
+                    .setModel(model)
+                    .setGeneration(generation)
+                    .setBody(body)
+                    .setDoors(doors)
+                    .setEngine(engine)
+                    .setDrive(drive)
+                    .setGearBox(gearBox);
             Add add = new Add()
                     .setCar(car)
                     .setName("2")
                     .setDescription("222")
                     .setOdd(21421)
                     .setPrice(1241234)
-                    .setAddOwner(new User().setId(1));
-            session.saveOrUpdate(add);
-            session.saveOrUpdate(car);
-            assertThat(car.getId(), not(is(0)));
-            assertThat(add.getId(), not(is(0)));
-            session.delete(add);
-            session.delete(car);
+                    .setAddOwner(addOwner);
             session.getTransaction().commit();
-        }
-    }
-
-
-    @Test
-    public void whenGetGenerationsTheItHaveModelAndProductionYears() {
-        try (Session session = factory.openSession()) {
-            session.beginTransaction();
-            Object[] modelsNames = session.createQuery("from Model ", Model.class).list()
-                    .stream()
-                    .map(Model::getName)
-                    .toArray();
-            List<Generation> gen = session.createQuery("from Generation", Generation.class).list();
-            session.getTransaction().commit();
-            for (Generation generation : gen) {
-                System.out.println(generation);
-                assertThat(generation.getModel().getName(), isOneOf(modelsNames));
-            }
+            return add;
         }
     }
 
     @Test
-    public void whenGetMakersFromAddGroupByMakerThenIchMakerOnes() {
-        try (Session session = factory.openSession()) {
-            session.beginTransaction();
-            List<KeyValue> adds = session.createQuery(
-                    "from Maker as m where m.id in (select a.car.maker.id from Add as a group by a.car.maker.id)",
-                    KeyValue.class
-            ).list();
-            session.getTransaction().commit();
-            final int size = adds.size();
-            Set<String> names = new TreeSet<>(String::compareTo);
-            adds.forEach(keyValue -> names.add(keyValue.getName()));
-            assertThat(size, is(names.size()));
-        }
+    public void whenAddAddThenAddAdd() {
+        STORE.addOrUpdateAdd(this.newAdd("name"));
+        List<Add> adds = STORE.allAdd();
+        assertThat(adds.size(), is(1));
+        Add add = adds.iterator().next();
+        assertThat(add.getId(), is(1));
+        assertThat(add.getCar().getId(), is(1));
     }
 
-    @SuppressWarnings("JpaQlInspection")
+    @Test
+    public void whenGetAddOfMakerThenReturn2Add() {
+        Add firstAdd = this.newAdd("First");
+        Add second = this.newAdd("Second");
+        STORE.addOrUpdateAdd(firstAdd);
+        STORE.addOrUpdateAdd(firstAdd.setId(0));
+        STORE.addOrUpdateAdd(second);
+        assertThat(STORE.getAddOfMaker(new Maker().setId(0)).size(), is(3));
+        assertThat(STORE.getAddOfMaker(new Maker().setId(1)).size(), is(2));
+        assertThat(STORE.getAddOfMaker(new Maker().setId(2)).size(), is(1));
+    }
+
+    @Test
+    public void whenGetMakersOfAddThenReturnIchMakerOnes() {
+        Add firstAdd = this.newAdd("First");
+        Add second = this.newAdd("Second");
+        STORE.addOrUpdateAdd(firstAdd);
+        STORE.addOrUpdateAdd(firstAdd.setId(0));
+        STORE.addOrUpdateAdd(second);
+        STORE.addOrUpdateAdd(second.setId(0));
+        STORE.addOrUpdateAdd(second.setId(0));
+        STORE.addOrUpdateAdd(second.setId(0));
+        assertThat(STORE.getAddOfMaker(new Maker().setId(0)).size(), is(6));
+        List<KeyValue> makers = STORE.getMakersOfAdd();
+        assertThat(makers.size(), is(2));
+        makers.forEach(keyValue ->
+                assertThat(keyValue.getName(), anyOf(is("First"), is("Second")))
+        );
+    }
+
+    @Test
+    public void whenGetAddAfterDateThen1() {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        Add firstAdd = this.newAdd("First");
+        Add second = this.newAdd("Second").setCreateTime(new Timestamp(calendar.getTimeInMillis()));
+        STORE.addOrUpdateAdd(firstAdd);
+        STORE.addOrUpdateAdd(second);
+        assertThat(STORE.getAddAfterDate(new Timestamp(calendar.getTimeInMillis())).size(), is(1));
+    }
+
     @Test
     public void whenGetAddHasPhotosThenPhotosNameNotDefault() {
+        Add firstAdd = this.newAdd("First");
+        Add secondAdd = this.newAdd("Second");
+        STORE.addOrUpdateAdd(firstAdd);
+        STORE.addOrUpdateAdd(firstAdd.setId(0));
+        STORE.addOrUpdateAdd(secondAdd);
+        STORE.addPhotos(
+                List.of(
+                        new Photo().setName(DEF_PHOTO).setAdd(firstAdd),
+                        new Photo().setName("dif").setAdd(secondAdd),
+                        new Photo().setName("DIFDIF").setAdd(secondAdd)
+                )
+        );
+        List<Add> adds = STORE.getAddHasPhoto();
+        assertThat(adds.size(), is(1));
+        assertThat(adds.iterator().next().getCar().getMaker().getName(), is("Second"));
+    }
+
+    @Test
+    public void whenGetAllMakersThe2() {
+        this.newAdd("First");
+        this.newAdd("Second");
+        assertThat(STORE.getAllMakers().size(), is(2));
+    }
+
+    @Test
+    public void whenGetModelsOfMakerThe2() {
+        this.newAdd("First");
+        Maker maker = this.newAdd("Second").getCar().getMaker();
         try (Session session = factory.openSession()) {
             session.beginTransaction();
-            List<Add> adds =  session.createQuery(
-                    "from Add a where a.id in(select p.add.id from Photo p where p.name !=:defaultName) group by a",
-                    Add.class)
-                    .setParameter("defaultName", DEF_PHOTO)
-                    .list();
+            session.save(new Model().setMaker(maker).setName("2"));
             session.getTransaction().commit();
-            System.out.println(adds);
-            final int size = adds.size();
-            Set<Integer> names = new TreeSet<>(Integer::compareTo);
-            adds.forEach(keyValue -> names.add(keyValue.getId()));
-            assertThat(size, is(names.size()));
-            adds.forEach(add ->
-                    add.getAllPhotos().forEach(photo ->
-                            assertThat(photo.getName(), is(not(DEF_PHOTO)))
-                    )
-            );
         }
+        assertThat(STORE.getModelsOfMaker(maker).size(), is(2));
+    }
+
+    @Test
+    public void whenGetGenOfModelsThe2() {
+        this.newAdd("First");
+        this.newAdd("First2");
+        Car car = this.newAdd("Second").getCar();
+        try (Session session = factory.openSession()) {
+            session.beginTransaction();
+            session.save(new Generation().setModel(car.getModel()));
+            session.getTransaction().commit();
+        }
+        assertThat(STORE.getGensOfModel(car.getModel()).size(), is(2));
+    }
+
+    @Test
+    public void whenGetBodyByGenThe2() {
+        this.newAdd("First");
+        this.newAdd("First2");
+        Car car = this.newAdd("Second").getCar();
+        try (Session session = factory.openSession()) {
+            session.beginTransaction();
+            session.save(new Body()
+                    .setGeneration(car.getGeneration())
+                    .setBodyName(new BodyName().setId(1))
+            );
+            session.getTransaction().commit();
+        }
+        assertThat(STORE.getBodyByGen(car.getGeneration()).size(), is(2));
+    }
+
+    @Test
+    public void whenGetEngineByBodyThe2() {
+        this.newAdd("First");
+        this.newAdd("First2");
+        Car car = this.newAdd("Second").getCar();
+        try (Session session = factory.openSession()) {
+            session.beginTransaction();
+            session.save(new Engine()
+                    .setBody(car.getBody())
+                    .setDrive(car.getDrive())
+            );
+            session.getTransaction().commit();
+        }
+        assertThat(STORE.getEnginesByBody(car.getBody()).size(), is(2));
+    }
+
+    @Test
+    public void whenGetDoorsByBodyThe2() {
+        this.newAdd("First");
+        this.newAdd("First2");
+        Car car = this.newAdd("Second").getCar();
+        try (Session session = factory.openSession()) {
+            session.beginTransaction();
+            session.save(new Doors().setBodyGenId(car.getBody()));
+            session.getTransaction().commit();
+        }
+        assertThat(STORE.getDoorsByBody(car.getBody()).size(), is(2));
     }
 }

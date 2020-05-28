@@ -75,7 +75,7 @@ public class CreateServlet extends HttpServlet {
      */
     private void add(HttpServletRequest req) {
         ImageUploader.upload(this, req);
-        if ("0".equals(req.getAttribute(NUMBERS).toString())) {
+        if ((Integer) req.getAttribute(NUMBERS) == 0) {
             req.setAttribute(NUMBERS, 1);
             req.setAttribute(PHOTO_ID_0, DEF_PHOTO);
         }
