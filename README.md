@@ -1,6 +1,7 @@
 # job4j_hibernate
 [![Build Status](https://travis-ci.org/QmBo/job4j_hibernate.svg?branch=master)](https://travis-ci.org/QmBo/job4j_hibernate)
 [![codecov](https://codecov.io/gh/QmBo/job4j_hibernate/branch/master/graph/badge.svg)](https://codecov.io/gh/QmBo/job4j_hibernate)
+[![CodeFactor](https://www.codefactor.io/repository/github/qmbo/job4j_hibernate/badge)](https://www.codefactor.io/repository/github/qmbo/job4j_hibernate)
 
 **Hibernate проект JavaEE. Данный проект реализован при прохождение куса Java Job4j.ru**
 
